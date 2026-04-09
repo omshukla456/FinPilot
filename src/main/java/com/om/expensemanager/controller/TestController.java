@@ -8,6 +8,6 @@ public class TestController {
 
     @GetMapping("/")
     public String home() {
-        return "Expense Manager Backend Running 🚀";
+        return "Expense Manager Backend Running 🚀"; // Done
     }
 }
