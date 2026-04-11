@@ -1,5 +1,7 @@
 package com.om.expensemanager.controller;
 
+import com.om.expensemanager.dto.ExpenseRequestDTO;
+import com.om.expensemanager.dto.ExpenseResponseDTO;
 import com.om.expensemanager.model.Expense;
 import com.om.expensemanager.service.ExpenseService;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +19,10 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
-    @PostMapping("/add")
-    public Expense addExpense(@RequestBody Expense expense) {
-        return expenseService.addExpense(expense);
-    }
+
 
     @GetMapping("/all")
-    public List<Expense> getAllExpenses() {
+    public List<ExpenseResponseDTO> getAllExpenses() {
         return expenseService.getAllExpenses();
     }
 }

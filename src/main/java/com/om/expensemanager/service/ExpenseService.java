@@ -1,7 +1,9 @@
 package com.om.expensemanager.service;
 
+import com.om.expensemanager.dto.ExpenseRequestDTO;
+import com.om.expensemanager.dto.ExpenseResponseDTO;
 import com.om.expensemanager.model.Expense;
-import com.om.expensemanager.model.user;
+import com.om.expensemanager.model.User;
 import com.om.expensemanager.repository.ExpenseRepository;
 import com.om.expensemanager.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -14,49 +16,52 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final UserRepository userRepository;
 
-    // Constructor Injection (BEST PRACTICE)
     public ExpenseService(ExpenseRepository expenseRepository, UserRepository userRepository) {
         this.expenseRepository = expenseRepository;
         this.userRepository = userRepository;
     }
 
     // ➕ Add Expense
-    public Expense addExpense(Expense expense) {
+    public ExpenseResponseDTO addExpense(ExpenseRequestDTO dto) {
 
-        // Extract user ID from request
-        if (expense.getUser() == null || expense.getUser().getId() == null) {
-            throw new RuntimeException("User ID must be provided");
-        }
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Long userId = expense.getUser().getId();
-
-        // Fetch full user from DB
-        user user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
-
-        // Set full user object
+        Expense expense = new Expense();
+        expense.setAmount(dto.getAmount());
+        expense.setDescription(dto.getDescription());
+        expense.setCategory(dto.getCategory());
+        expense.setDate(dto.getDate());
         expense.setUser(user);
 
-        // Save expense
-        return expenseRepository.save(expense);
+        Expense savedExpense = expenseRepository.save(expense);
+
+        return mapToResponseDTO(savedExpense);
     }
 
     // 📊 Get All Expenses
-    public List<Expense> getAllExpenses() {
-        return expenseRepository.findAll();
-    }
-
-    // 📊 Get Expenses by User (VERY IMPORTANT 🔥)
-    public List<Expense> getExpensesByUser(Long userId) {
-
-        // Check if user exists
-        userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+    public List<ExpenseResponseDTO> getAllExpenses() {
         return expenseRepository.findAll()
                 .stream()
-                .filter(expense -> expense.getUser().getId().equals(userId))
+                .map(this::mapToResponseDTO)
                 .toList();
+    }
+
+    // 🔁 Mapping Method
+    private ExpenseResponseDTO mapToResponseDTO(Expense expense) {
+
+        ExpenseResponseDTO dto = new ExpenseResponseDTO();
+
+        dto.setId(expense.getId());
+        dto.setAmount(expense.getAmount());
+        dto.setDescription(expense.getDescription());
+        dto.setCategory(expense.getCategory());
+        dto.setDate(expense.getDate());
+
+        dto.setUserName(expense.getUser().getName());
+        dto.setUserEmail(expense.getUser().getEmail());
+
+        return dto;
     }
 
     // ❌ Delete Expense

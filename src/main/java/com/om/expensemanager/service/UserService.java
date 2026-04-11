@@ -1,6 +1,6 @@
 package com.om.expensemanager.service;
 
-import com.om.expensemanager.model.user;
+import com.om.expensemanager.model.User;
 import com.om.expensemanager.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +15,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public user register(user user) {
+    public User register(User user) {
         return userRepository.save(user);
     }
 
-    public Optional<user> login(String email, String password) {
-        Optional<user> user = userRepository.findByEmail(email);
+    public Optional<User> login(String email, String password) {
+        Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent() && user.get().getPassword().equals(password)) {
             return user;

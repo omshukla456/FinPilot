@@ -2,14 +2,13 @@ package com.om.expensemanager.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class user {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

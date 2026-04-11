@@ -1,6 +1,6 @@
 package com.om.expensemanager.controller;
 
-import com.om.expensemanager.model.user;
+import com.om.expensemanager.model.User;
 import com.om.expensemanager.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +18,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public user register(@RequestBody user user) {
+    public User register(@RequestBody User user) {
         return userService.register(user);
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody user user) {
-        Optional<user> existingUser = userService.login(user.getEmail(), user.getPassword());
+    public String login(@RequestBody User user) {
+        Optional<User> existingUser = userService.login(user.getEmail(), user.getPassword());
 
         if (existingUser.isPresent()) {
             return "Login Successful";
