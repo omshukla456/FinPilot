@@ -1,35 +1,40 @@
 package com.om.expensemanager.controller;
 
 import com.om.expensemanager.model.User;
-import com.om.expensemanager.service.UserService;
+import com.om.expensemanager.repository.UserRepository;
+import com.om.expensemanager.security.JwtUtil;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin
 public class AuthController {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(UserRepository userRepository, JwtUtil jwtUtil) {
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
+    // 🔐 REGISTER
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.register(user);
+    public String register(@RequestBody User user) {
+        userRepository.save(user);
+        return "User registered successfully";
     }
 
+    // 🔐 LOGIN
     @PostMapping("/login")
     public String login(@RequestBody User user) {
-        Optional<User> existingUser = userService.login(user.getEmail(), user.getPassword());
 
-        if (existingUser.isPresent()) {
-            return "Login Successful";
-        } else {
-            return "Invalid Credentials";
+        User existing = userRepository.findByEmail(user.getEmail());
+
+        if (existing == null || !existing.getPassword().equals(user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
         }
+
+        return jwtUtil.generateToken(user.getEmail());
     }
 }

@@ -2,23 +2,29 @@ package com.om.expensemanager.service;
 
 import com.om.expensemanager.dto.ExpenseRequestDTO;
 import com.om.expensemanager.dto.ExpenseResponseDTO;
+import com.om.expensemanager.dto.PredictionResponseDTO;
 import com.om.expensemanager.model.Expense;
 import com.om.expensemanager.model.User;
 import com.om.expensemanager.repository.ExpenseRepository;
 import com.om.expensemanager.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import com.om.expensemanager.ai.CategoryService;
 
 import java.util.List;
+import java.util.*;
 
 @Service
 public class ExpenseService {
-
+    private final CategoryService categoryService;
     private final ExpenseRepository expenseRepository;
     private final UserRepository userRepository;
 
-    public ExpenseService(ExpenseRepository expenseRepository, UserRepository userRepository) {
+    public ExpenseService(ExpenseRepository expenseRepository,
+                          UserRepository userRepository,
+                          CategoryService categoryService) {
         this.expenseRepository = expenseRepository;
         this.userRepository = userRepository;
+        this.categoryService = categoryService;
     }
 
     // ➕ Add Expense
@@ -30,7 +36,8 @@ public class ExpenseService {
         Expense expense = new Expense();
         expense.setAmount(dto.getAmount());
         expense.setDescription(dto.getDescription());
-        expense.setCategory(dto.getCategory());
+        String category = categoryService.categorize(dto.getDescription());
+        expense.setCategory(category);
         expense.setDate(dto.getDate());
         expense.setUser(user);
 
@@ -62,6 +69,99 @@ public class ExpenseService {
         dto.setUserEmail(expense.getUser().getEmail());
 
         return dto;
+    }
+    public PredictionResponseDTO getPrediction(Long userId) {
+
+        List<Expense> expenses = expenseRepository.findAll()
+                .stream()
+                .filter(expense -> expense.getUser().getId().equals(userId))
+                .toList();
+
+        if (expenses.isEmpty()) {
+            throw new RuntimeException("No expenses found for user");
+        }
+
+        double total = expenses.stream()
+                .mapToDouble(Expense::getAmount)
+                .sum();
+
+        long days = expenses.stream()
+                .map(Expense::getDate)
+                .distinct()
+                .count();
+
+        double average = total / days;
+        double weeklyPrediction = average * 7;
+
+        PredictionResponseDTO dto = new PredictionResponseDTO();
+        dto.setAverageDailyExpense(average);
+        dto.setPredictedWeeklyExpense(weeklyPrediction);
+
+        return dto;
+    }
+
+    public List<String> getInsights(Long userId) {
+
+        List<Expense> expenses = expenseRepository.findAll()
+                .stream()
+                .filter(e -> e.getUser().getId().equals(userId))
+                .toList();
+
+        if (expenses.isEmpty()) {
+            throw new RuntimeException("No expenses found");
+        }
+
+        List<String> insights = new ArrayList<>();
+
+        // 🔥 1. Highest spending category
+        Map<String, Double> categoryTotals = new HashMap<>();
+
+        for (Expense e : expenses) {
+            categoryTotals.put(
+                    e.getCategory(),
+                    categoryTotals.getOrDefault(e.getCategory(), 0.0) + e.getAmount()
+            );
+        }
+
+        String topCategory = Collections.max(categoryTotals.entrySet(),
+                Map.Entry.comparingByValue()).getKey();
+
+        insights.add("Your highest spending is on " + topCategory);
+
+        // 🔥 2. Total spending insight
+        double total = expenses.stream()
+                .mapToDouble(Expense::getAmount)
+                .sum();
+
+        if (total > 5000) {
+            insights.add("You are spending quite a lot this month");
+        } else {
+            insights.add("Your spending is under control");
+        }
+
+        // 🔥 3. Travel warning
+        if (categoryTotals.getOrDefault("Travel", 0.0) > 2000) {
+            insights.add("You are spending heavily on Travel");
+        }
+
+        return insights;
+    }
+    public ExpenseResponseDTO addExpenseWithUser(ExpenseRequestDTO dto, User user) {
+
+        Expense expense = new Expense();
+        expense.setAmount(dto.getAmount());
+        expense.setDescription(dto.getDescription());
+        expense.setDate(dto.getDate());
+
+        // 🔥 AI category
+        String category = categoryService.categorize(dto.getDescription());
+        expense.setCategory(category);
+
+        expense.setUser(user);
+
+        Expense saved = expenseRepository.save(expense);
+
+        return mapToResponseDTO(saved);
     }
 
     // ❌ Delete Expense
