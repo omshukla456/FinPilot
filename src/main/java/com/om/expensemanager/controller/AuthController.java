@@ -5,6 +5,8 @@ import com.om.expensemanager.repository.UserRepository;
 import com.om.expensemanager.security.JwtUtil;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin
@@ -21,20 +23,29 @@ public class AuthController {
     // 🔐 REGISTER
     @PostMapping("/register")
     public String register(@RequestBody User user) {
+
+        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+
+        if (existingUser.isPresent()) {
+            throw new RuntimeException("User already exists");
+        }
+
         userRepository.save(user);
+
         return "User registered successfully";
     }
 
-    // 🔐 LOGIN
+    // 🔑 LOGIN
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
+    public String login(@RequestBody User loginUser) {
 
-        User existing = userRepository.findByEmail(user.getEmail());
+        Optional<User> user = userRepository.findByEmail(loginUser.getEmail());
 
-        if (existing == null || !existing.getPassword().equals(user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+        if (user.isPresent() && user.get().getPassword().equals(loginUser.getPassword())) {
+
+            return jwtUtil.generateToken(user.get().getEmail());
         }
 
-        return jwtUtil.generateToken(user.getEmail());
+        throw new RuntimeException("Invalid credentials");
     }
 }

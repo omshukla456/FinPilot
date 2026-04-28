@@ -1,10 +1,11 @@
 package com.om.expensemanager.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class PredictionResponseDTO {
 
-    private double averageDailyExpense;
-    private double predictedWeeklyExpense;
+    private Double predictedNextExpense;
 }

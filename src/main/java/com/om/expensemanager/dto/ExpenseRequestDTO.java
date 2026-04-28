@@ -18,7 +18,4 @@ public class ExpenseRequestDTO {
 
     @NotNull
     private LocalDate date;
-
-    @NotNull
-    private Long userId;
 }

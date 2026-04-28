@@ -23,7 +23,8 @@ public class Expense {
 
     private LocalDate date;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    // 🔥 IMPORTANT FIX
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
