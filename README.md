@@ -1,49 +1,63 @@
-# AI-Powered Expense Manager
+# 🚀 FinPilot – AI-Powered Expense Manager
 
-An intelligent expense management system that not only tracks user spending but also analyzes and categorizes expenses using smart backend logic.
+FinPilot is a full-stack expense management system designed to help users track spending, gain insights, and predict future expenses using intelligent backend logic.
 
----
-
-## Overview
-
-The AI Expense Manager is a backend-driven application designed to help users manage their finances efficiently. Unlike traditional expense trackers, this system introduces intelligent categorization and structured data handling, making it more practical and scalable.
+This project focuses on building a **secure, scalable, and production-ready backend** rather than just a basic CRUD application.
 
 ---
 
-## Key Features
+## ✨ Features
 
-### User Authentication
+### 🔐 Authentication & Security
 
-* User registration and login functionality
-* Multi-user support with user-specific data
-
-### Expense Management
-
-* Add, view, and delete expenses
-* Organized storage using PostgreSQL
-
-### Intelligent Categorization
-
-* Automatically assigns categories based on expense description
-* Removes the need for manual categorization
-* Built using rule-based logic (can be extended to machine learning)
-
-### Clean Architecture
-
-* DTO-based API design
-* Layered structure (Controller → Service → Repository)
-* Maintainable and scalable codebase
+* User Registration & Login APIs
+* JWT-based Authentication
+* Secure password handling
+* Protected routes with proper 401/403 handling
 
 ---
 
-## Tech Stack
+### 💸 Expense Management
+
+* Add expenses with amount, description, category, and date
+* Fetch user-specific expenses
+* Clean DTO-based architecture
+* Structured request and response handling
+
+---
+
+### 📊 Insights Engine
+
+* Analyze spending patterns
+* Identify highest spending categories
+* Generate meaningful financial insights
+
+---
+
+### 📈 Prediction System
+
+* Calculate average daily expense
+* Predict weekly spending
+* Built using real data-driven logic
+
+---
+
+### 🧪 API Testing
+
+* Fully tested using Postman
+* Verified all endpoints
+* Handled real-world errors (401, 403, 500)
+
+---
+
+## 🛠️ Tech Stack
 
 ### Backend
 
 * Java
 * Spring Boot
-* Spring Data JPA
-* Hibernate
+* Spring Security
+* JWT Authentication
 
 ### Database
 
@@ -51,104 +65,133 @@ The AI Expense Manager is a backend-driven application designed to help users ma
 
 ### Tools
 
-* Postman (API testing)
-* pgAdmin (database management)
+* Postman (API Testing)
+* Git & GitHub
 
 ---
 
-## Project Architecture
+## 📂 Project Structure
 
-```text
-Controller → DTO → Service → Repository → Database
-                    ↓
-                 AI Logic
 ```
-
----
-
-## Project Structure
-
-```text
-expensemanager/
+com.om.expensemanager
 │
-├── controller/
-├── service/
-├── repository/
-├── model/
-├── dto/
-├── ai/
-└── config/
+├── controller        # REST Controllers
+├── service           # Business Logic
+├── repository        # Database Access
+├── model             # Entity Classes
+├── dto               # Request/Response DTOs
+├── security          # JWT & Security Config
+├── config            # Security Configuration
 ```
 
 ---
 
-## API Endpoints
+## 🔑 API Endpoints
 
-### Authentication
+### 🔐 Authentication
 
-* POST /auth/register → Register a new user
-* POST /auth/login → Login user
-
-### Expenses
-
-* POST /expenses/add → Add expense (auto-categorized)
-* GET /expenses/all → Retrieve all expenses
+* `POST /auth/register` → Register a new user
+* `POST /auth/login` → Login and receive JWT token
 
 ---
 
-## Sample Request
+### 💸 Expenses
 
-### Add Expense
+* `POST /expenses/add` → Add new expense
+* `GET /expenses/all` → Get all expenses (user-specific)
 
-```json
-{
-  "amount": 300,
-  "description": "Pizza from Dominos",
-  "date": "2026-04-08",
-  "userId": 1
-}
+---
+
+### 📊 Insights
+
+* `GET /expenses/insights/{userId}` → Get spending insights
+
+---
+
+### 📈 Prediction
+
+* `GET /expenses/predict/{userId}` → Get expense predictions
+
+---
+
+## 🔐 Authorization
+
+All protected APIs require JWT token in headers:
+
+```
+Authorization: Bearer <JWT_TOKEN>
 ```
 
 ---
 
-## Sample Response
+## ▶️ How to Run
 
-```json
-{
-  "id": 1,
-  "amount": 300,
-  "description": "Pizza from Dominos",
-  "category": "Food",
-  "date": "2026-04-08",
-  "userName": "Om",
-  "userEmail": "om@gmail.com"
-}
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/finpilot.git
+cd finpilot
 ```
 
 ---
 
-## Future Improvements
+### 2️⃣ Configure PostgreSQL Database
 
-* Machine learning-based categorization
-* Expense prediction using historical data
-* Budget tracking and alerts
-* Frontend dashboard integration
+Update `application.properties`:
 
----
-
-## Why This Project Matters
-
-This project goes beyond basic CRUD functionality by introducing intelligent decision-making into a common use case. It demonstrates practical backend development skills, structured architecture, and the ability to design scalable systems.
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/finpilot
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+```
 
 ---
 
-## Author
+### 3️⃣ Run the backend
 
-Om Shukla
-
+```bash
+mvn spring-boot:run
+```
 
 ---
 
-## Final Note
+### 4️⃣ Test APIs
 
-This project reflects an approach to building applications that are not just functional, but also meaningful and extensible.
+Use Postman to test all endpoints.
+
+---
+
+## 🧠 What I Learned
+
+* Building secure backend systems using JWT
+* Handling real-world debugging scenarios (401, 403, 500 errors)
+* Designing scalable REST APIs
+* Implementing logic beyond CRUD (insights & predictions)
+* Connecting backend logic with real data
+
+---
+
+## 🚀 Future Enhancements
+
+* Frontend integration (React UI)
+* Deployment (Render / AWS)
+* Advanced AI-based predictions
+* Budget tracking & alerts
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to fork and improve the project.
+
+---
+
+## 📬 Contact
+
+**Om Shukla**
+📧 [om.shukla9901@gmail.com](mailto:om.shukla9901@gmail.com)
+🔗 LinkedIn: https://www.linkedin.com/in/omshukla456/
+
+---
+
+⭐ If you found this project useful, consider giving it a star!
